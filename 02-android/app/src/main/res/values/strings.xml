@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Gr1accdemp2023b</string>
+    <string name="texto_saludo">Hola</string>
+    <color name="color_letra">#40DA12</color>
+    <color name="background">#33FFA2</color>
+
 </resources>

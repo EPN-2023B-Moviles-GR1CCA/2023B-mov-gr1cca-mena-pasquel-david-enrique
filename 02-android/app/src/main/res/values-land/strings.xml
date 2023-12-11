@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gr1accdemp2023b</string>
+    <string name="texto_saludo">Buenos Dias</string>
+    <color name="color_letra">#DAB912</color>
+    <color name="background">#EC792A</color>
+</resources>

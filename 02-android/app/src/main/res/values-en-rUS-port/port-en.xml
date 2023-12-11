@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">English</string>
+    <string name="texto_saludo">PORT-EN</string>
+    <color name="color_letra">#1E1BEC</color>
+    <color name="background">#EC1B3D</color>
+
+</resources>

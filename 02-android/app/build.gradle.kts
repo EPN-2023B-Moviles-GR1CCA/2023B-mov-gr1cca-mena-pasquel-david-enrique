@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.gr1accdemp2023b"
+    namespace = "com.example.gr1accvaes2023b"
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "com.example.gr1accdemp2023b"
+        applicationId = "com.example.gr1accvaes2023b"
         minSdk = 24
         targetSdk = 33
         versionCode = 1
@@ -23,7 +23,10 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
@@ -56,6 +59,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
