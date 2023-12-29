@@ -1,14 +1,16 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.firebase.appdistribution")
+    id("com.google.gms.google-services")
 }
 
 android {
-    namespace = "com.example.gr1accvaes2023b"
+    namespace = "com.example.gr1accdemp2023b"
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "com.example.gr1accvaes2023b"
+        applicationId = "com.example.gr1accdemp2023b"
         minSdk = 24
         targetSdk = 33
         versionCode = 1

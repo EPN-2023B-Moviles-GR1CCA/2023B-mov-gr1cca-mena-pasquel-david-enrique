@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "215694495777",
+    "project_id": "b2023-gr1acc-demp",
+    "storage_bucket": "b2023-gr1acc-demp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:215694495777:android:608ed4cca88f44afe6d360",
+        "android_client_info": {
+          "package_name": "com.example.gr1accdemp2023b"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfmyFwl3SLvaSBNqLVqf6YDmjTztDpDmg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
