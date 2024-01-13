@@ -1,29 +1,27 @@
-package com.example.gr1accdemp2023b.ui
+package com.example.gr1accdemp2023b
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.gr1accdemp2023b.BEntrenador
 
 class ESqliteHelperEntrenador(
-    contexto: Context?, /// THIS
-): SQLiteOpenHelper(
+    contexto: Context?, // THIS
+) : SQLiteOpenHelper(
     contexto,
-    "moviles",
+    "moviles", // nombre BDD
     null,
     1
-)
-{
+) {
     override fun onCreate(db: SQLiteDatabase?) {
         val scriptSQLCrearTablaEntrenador =
             """
-                CREATE TABLE ENTRENADOR(
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombre VARCHAR(50),
-                descripcion VARCHAR(50)
-                )
-              """.trimIndent()
+               CREATE TABLE ENTRENADOR(
+               id INTEGER PRIMARY KEY AUTOINCREMENT,
+               nombre VARCHAR(50),
+               descripcion VARCHAR(50)
+               ) 
+            """.trimIndent()
         db?.execSQL(scriptSQLCrearTablaEntrenador)
     }
 
@@ -32,34 +30,43 @@ class ESqliteHelperEntrenador(
                            p2: Int) {}
 
 
+
     fun crearEntrenador(
         nombre: String,
         descripcion: String
-    ): Boolean{
+    ): Boolean {
         val basedatosEscritura = writableDatabase
         val valoresAGuardar = ContentValues()
-        valoresAGuardar.put("nombre", descripcion)
+        valoresAGuardar.put("nombre", nombre)
+        valoresAGuardar.put("descripcion", descripcion)
         val resultadoGuardar = basedatosEscritura
             .insert(
-                "ENTRENADOR",
+                "ENTRENADOR", // Nombre tabla
                 null,
-                valoresAGuardar
+                valoresAGuardar // valores
             )
         basedatosEscritura.close()
         return if (resultadoGuardar.toInt() == -1) false else true
     }
 
+
+
     fun eliminarEntrenadorFormulario(id:Int):Boolean{
         val conexionEscritura = writableDatabase
+        // where ID = ?
         val parametrosConsultaDelete = arrayOf( id.toString() )
+        // [1]
+        // [1,2,3], "id=? and a=? and b=?", "id=1 and a=2 and b=3"
+        // ? = 1
+        // "id=?" => "id=1"
         val resultadoEliminacion = conexionEscritura
             .delete(
-                "ENTRENADOR",
-                "id=?",
+                "ENTRENADOR", // Nombre tabla
+                "id=?", // Consulta Where
                 parametrosConsultaDelete
             )
         conexionEscritura.close()
-        return if (resultadoEliminacion == -1 ) false else true
+        return if(resultadoEliminacion == -1) false else true
     }
 
 
@@ -85,7 +92,7 @@ class ESqliteHelperEntrenador(
         return if(resultadoActualizacion == -1) false else true
     }
 
-    fun consultarEntrenadorPorID(id: Int): BEntrenador {
+    fun consultarEntrenadorPorID(id: Int): BEntrenador{
         val baseDatosLectura = readableDatabase
         val scriptConsultaLectura = """
             SELECT * FROM ENTRENADOR WHERE ID = ?

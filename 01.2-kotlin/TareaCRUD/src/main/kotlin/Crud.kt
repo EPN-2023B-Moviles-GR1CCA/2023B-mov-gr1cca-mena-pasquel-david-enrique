@@ -16,8 +16,8 @@ class GestorDatos {
     }
 
     private fun leerDatos() {
-        val archivoZoologicos = File("data/zoologicos.json")
-        val archivoFauna = File("data/fauna.json")
+        val archivoZoologicos = File("D:\\Deybyd\\Moviles\\2023B-mov-gr1cca-mena-pasquel-david-enrique\\01.2-kotlin\\TareaCRUD\\data\\zoologicos.json")
+        val archivoFauna = File("D:\\Deybyd\\Moviles\\2023B-mov-gr1cca-mena-pasquel-david-enrique\\01.2-kotlin\\TareaCRUD\\data\\fauna.json")
 
         if (archivoZoologicos.exists()) {
             val type = object : TypeToken<List<Zoologico>>() {}.type
@@ -31,8 +31,8 @@ class GestorDatos {
     }
 
     private fun escribirDatos() {
-        File("data/zoologicos.json").writeText(gson.toJson(zoologicos))
-        File("data/fauna.json").writeText(gson.toJson(fauna))
+        File("D:\\Deybyd\\Moviles\\2023B-mov-gr1cca-mena-pasquel-david-enrique\\01.2-kotlin\\TareaCRUD\\data\\zoologicos.json").writeText(gson.toJson(zoologicos))
+        File("D:\\Deybyd\\Moviles\\2023B-mov-gr1cca-mena-pasquel-david-enrique\\01.2-kotlin\\TareaCRUD\\data\\fauna.json").writeText(gson.toJson(fauna))
     }
 
     fun crearZoologico(zoologico: Zoologico) {
