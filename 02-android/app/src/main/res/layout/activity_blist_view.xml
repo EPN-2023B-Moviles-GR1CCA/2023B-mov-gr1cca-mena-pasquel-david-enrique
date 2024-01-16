@@ -10,8 +10,8 @@
         android:id="@+id/lv_list_view"
         android:layout_width="223dp"
         android:layout_height="477dp"
-        tools:layout_editor_absoluteX="85dp"
-        tools:layout_editor_absoluteY="49dp" />
+        tools:layout_editor_absoluteX="94dp"
+        tools:layout_editor_absoluteY="52dp" />
 
     <Button
         android:id="@+id/btn_anadir_list_view"
