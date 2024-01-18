@@ -1,1 +1,23 @@
-[{"idAnimal":1,"idZoo":1,"nombreNacimiento":"Simba","peso":200.5,"fechaNacimiento":"2020-03-15"}]
+[
+  {
+    "idAnimal": 1,
+    "idZoo": 1,
+    "nombreNacimiento": "Simba",
+    "peso": 150.5,
+    "fechaNacimiento": "2022-05-15"
+  },
+  {
+    "idAnimal": 1,
+    "idZoo": 2,
+    "nombreNacimiento": "Grifo",
+    "peso": 160.0,
+    "fechaNacimiento": "2022-07-02"
+  },
+  {
+    "idAnimal": 1,
+    "idZoo": 3,
+    "nombreNacimiento": "Jumbo",
+    "peso": 4000.0,
+    "fechaNacimiento": "2022-03-20"
+  }
+]

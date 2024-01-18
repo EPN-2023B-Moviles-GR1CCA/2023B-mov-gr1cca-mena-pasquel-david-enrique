@@ -27,4 +27,16 @@
       app:layout_constraintStart_toStartOf="@+id/lv_fauna"
       app:layout_constraintTop_toBottomOf="@+id/lv_fauna" />
 
+  <Button
+      android:id="@+id/buttonToZoo"
+      android:layout_width="214dp"
+      android:layout_height="86dp"
+      android:layout_marginBottom="28dp"
+      android:text="Button"
+      android:textSize="20sp"
+      app:layout_constraintBottom_toTopOf="@+id/lv_fauna"
+      app:layout_constraintEnd_toEndOf="@+id/lv_fauna"
+      app:layout_constraintHorizontal_bias="0.555"
+      app:layout_constraintStart_toStartOf="@+id/lv_fauna" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -33,6 +33,14 @@ class BFauna : AppCompatActivity() {
         idZooB= intent.getIntExtra("ZOO_ID", -1)
         
         gestorDatos = GestorDatos(this)
+        val button = findViewById<Button>(R.id.buttonToZoo)
+        val nombrePadre = gestorDatos.obtenerZooBase(idZooB)!!.nombreComun
+        button.text = nombrePadre
+        button.setOnClickListener{
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
 
         listView = findViewById<ListView>(R.id.lv_fauna)
         registerForContextMenu(actualizarLista())
@@ -52,9 +60,11 @@ class BFauna : AppCompatActivity() {
         // Llenamos las opciones del menu
         val inflater = menuInflater
         inflater.inflate(R.menu.menu, menu)
+        // Ocultar el elemento "Ver Fauna"
+        val item = menu?.findItem(R.id.menu_ver)
+        item?.isVisible = false
         // Obtener el id del ArrayListSeleccionado
         val info = menuInfo as AdapterView.AdapterContextMenuInfo
-        Log.d("IDen", "${info}")
         val posicion = info.position
         posicionItemSeleccionado = posicion
     }

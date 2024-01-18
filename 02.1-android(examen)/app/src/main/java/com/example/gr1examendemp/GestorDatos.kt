@@ -4,7 +4,10 @@ import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.io.File
 import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 
 class GestorDatos(private val context: Context) {
 
@@ -15,18 +18,22 @@ class GestorDatos(private val context: Context) {
     private val nombreArchivoZoologicos = "zoologicos.json"
     private val nombreArchivoFauna = "fauna.json"
 
-    init{
+    init {
+        copiarArchivoSiNoExiste(R.raw.zoologicos, nombreArchivoZoologicos)
+        copiarArchivoSiNoExiste(R.raw.fauna, nombreArchivoFauna)
         leerDatos()
     }
     private fun leerDatos() {
         try {
-            val jsonZooBases = leerDatosDesdeArchivo(nombreArchivoZoologicos)
-            val typeZooBases = object : TypeToken<List<ZooBase>>() {}.type
-            ZooBases = gson.fromJson(jsonZooBases, typeZooBases)
+            val jsonFauna = leerDatosDesdeArchivo(nombreArchivoFauna)
 
-            val jsonFaunaBase = leerDatosDesdeArchivo(nombreArchivoFauna)
-            val typeFaunaBase = object : TypeToken<List<FaunaBase>>() {}.type
-            FaunaBase = gson.fromJson(jsonFaunaBase, typeFaunaBase)
+            val typeFaun = object : TypeToken<List<FaunaBase>>() {}.type
+            FaunaBase = gson.fromJson(jsonFauna, typeFaun)
+
+            val jsonZoo = leerDatosDesdeArchivo(nombreArchivoZoologicos)
+
+            val typeZoo = object : TypeToken<List<ZooBase>>() {}.type
+            ZooBases = gson.fromJson(jsonZoo, typeZoo)
 
         } catch (e: IOException) {
             e.printStackTrace()
@@ -35,12 +42,11 @@ class GestorDatos(private val context: Context) {
 
     private fun escribirDatos() {
         try {
-            Log.d("EscriDat", ZooBases.toString())
-            val jsonZooBases = gson.toJson(ZooBases)
-            escribirDatosEnArchivo(nombreArchivoZoologicos, jsonZooBases)
+            val jsonZoo = gson.toJson(ZooBases)
+            escribirDatosEnArchivo(nombreArchivoZoologicos, jsonZoo)
 
-            val jsonFaunaBase = gson.toJson(FaunaBase)
-            escribirDatosEnArchivo(nombreArchivoFauna, jsonFaunaBase)
+            val jsonFauna= gson.toJson(FaunaBase)
+            escribirDatosEnArchivo(nombreArchivoFauna, jsonFauna)
 
         } catch (e: IOException) {
             e.printStackTrace()
@@ -72,6 +78,30 @@ class GestorDatos(private val context: Context) {
             e.printStackTrace()
         }
     }
+
+    private fun copiarArchivoDesdeRawARuta(rawResourceId: Int, nombreArchivo: String) {
+        try {
+            val inputStream: InputStream = context.resources.openRawResource(rawResourceId)
+            val outputStream: OutputStream = context.openFileOutput(nombreArchivo, Context.MODE_PRIVATE)
+
+            inputStream.use { input ->
+                outputStream.use { output ->
+                    input.copyTo(output)
+                }
+            }
+            Log.d("CopiarArchivo", "Archivo $nombreArchivo copiado exitosamente.")
+        } catch (e: IOException) {
+            Log.e("CopiarArchivo", "Error al copiar archivo $nombreArchivo: ${e.message}")
+        }
+    }
+
+    private fun copiarArchivoSiNoExiste(rawResourceId: Int, nombreArchivo: String) {
+        val archivo = File(context.filesDir, nombreArchivo)
+        if (!archivo.exists()) {
+            copiarArchivoDesdeRawARuta(rawResourceId, nombreArchivo)
+        }
+    }
+
 
     fun crearZooBase(ZooBase: ZooBase) {
         ZooBases.add(ZooBase)
@@ -139,7 +169,7 @@ class GestorDatos(private val context: Context) {
     fun obtenerUltimoIdFaunaPorIdZoo(idZoo: Int): Int {
         val faunaFiltrada = FaunaBase.toList().filter { it.idZoo == idZoo }
         val ultimoIdFauna: Int? = faunaFiltrada.lastOrNull()?.idAnimal
-        return ultimoIdFauna ?: 1
+        return ultimoIdFauna ?: 0
     }
 
     fun getZooBases(): List<ZooBase> {
