@@ -59,14 +59,15 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         // Base de datos sqlite
         EBaseDeDatos.tablaEntrenador = ESqliteHelperEntrenador(this)
+
         val botonCicloVida = findViewById<Button>(R.id.btn_ciclo_vida)
+
         botonCicloVida
             .setOnClickListener {
                 irActividad(ACicloVida::class.java)
@@ -94,24 +95,36 @@ class MainActivity : AppCompatActivity() {
                 abrirActividadConParametros(
                     CIntentExplicitoParametros::class.java)
             }
+
         val botonSqlite = findViewById<Button>(R.id.btn_sqlite)
         botonSqlite
             .setOnClickListener {
                 irActividad(ECrudEntrenador::class.java)
             }
+
+
         val botonRView = findViewById<Button>(R.id.btn_revcycler_view)
-        botonSqlite
+        botonRView
             .setOnClickListener {
                 irActividad(FRecyclerView::class.java)
             }
+
         val botonGoogleMaps = findViewById<Button>(R.id.btn_google_maps)
-        botonSqlite
+        botonGoogleMaps
             .setOnClickListener {
                 irActividad(GGoogleMapsActivity::class.java)
             }
 
+
+        val botonFirebaseUI = findViewById<Button>(R.id.btn_intent_firebase_ui)
+        botonFirebaseUI
+            .setOnClickListener {
+                irActividad(HFirebaseUIAuth::class.java)
+            }
+
     } // Termina onCreate
-    fun abrirActividadConParametros(
+
+        fun abrirActividadConParametros(
         clase: Class<*>
     ){
         val intentExplicito = Intent(this, clase)

@@ -1,0 +1,23 @@
+[
+  {
+    "idZoo": 1,
+    "nombreComun": "León",
+    "nombreCientifico": "Panthera leo",
+    "diurno": true,
+    "paisOriginario": "África"
+  },
+  {
+    "idZoo": 2,
+    "nombreComun": "Tigre",
+    "nombreCientifico": "Panthera tigris",
+    "diurno": false,
+    "paisOriginario": "India"
+  },
+  {
+    "idZoo": 3,
+    "nombreComun": "Elefante",
+    "nombreCientifico": "Loxodonta africana",
+    "diurno": true,
+    "paisOriginario": "África"
+  }
+]
