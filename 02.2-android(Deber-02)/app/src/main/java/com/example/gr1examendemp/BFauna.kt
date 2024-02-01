@@ -34,7 +34,9 @@ class BFauna : AppCompatActivity() {
         
         gestorDatos = GestorDatos(this)
         val button = findViewById<Button>(R.id.buttonToZoo)
-        val nombrePadre = gestorDatos.obtenerZooBase(idZooB)!!.nombreComun
+        //val nombrePadre = gestorDatos.obtenerZooBase(idZooB)!!.nombreComun
+        val nombrePadre = ECrudGestor.tablaEntrenador!!.obtenerZooBase(idZooB)!!.nombreComun
+
         button.text = nombrePadre
         button.setOnClickListener{
             val intent = Intent(this, MainActivity::class.java)
@@ -82,12 +84,19 @@ class BFauna : AppCompatActivity() {
     override fun onContextItemSelected(item: MenuItem): Boolean {
         return when (item.itemId){
             R.id.menu_editar -> {
+               /*
                 val zooSeleccionado = gestorDatos.getFaunaBasePorIdZoo(idZooB)[posicionItemSeleccionado].idAnimal
                 val idnew = gestorDatos.getFaunaBasePorIdZoo(idZooB)[posicionItemSeleccionado].idAnimal
                 val NombreNacimiento = gestorDatos.getFaunaBasePorIdZoo(idZooB)[posicionItemSeleccionado].nombreNacimiento
                 val Peso = gestorDatos.getFaunaBasePorIdZoo(idZooB)[posicionItemSeleccionado].peso.toString()
                 val FechaNacimiento = gestorDatos.getFaunaBasePorIdZoo(idZooB)[posicionItemSeleccionado].fechaNacimiento
+                */
 
+                val Data = ECrudGestor.tablaEntrenador!!.getFaunaBasePorIdZoo(idZooB)[posicionItemSeleccionado]
+                val idnew = Data.idAnimal
+                val NombreNacimiento = Data.nombreNacimiento
+                val Peso = Data.peso.toString()
+                val FechaNacimiento = Data.fechaNacimiento
 
                 val formularioBase = layoutInflater.inflate(R.layout.formulario_fauna, null)
                 setContentView(formularioBase)
@@ -119,9 +128,9 @@ class BFauna : AppCompatActivity() {
                     Log.d("MainActivity", faunaBase.toString())
 
                     // Código para actualizar el elemento en la base de datos
-                    gestorDatos.actualizarFaunaBase(faunaBase)
-
-                    val dat = gestorDatos.getFaunaBasePorIdZoo(idZooB)
+                    //gestorDatos.actualizarFaunaBase(faunaBase)
+                    ECrudGestor.tablaEntrenador!!.actualizarFaunaBase(faunaBase)
+                    //val dat = gestorDatos.getFaunaBasePorIdZoo(idZooB)
                     // Cambiar la visibilidad de las vistas para mostrar la interfaz principal
                     setContentView(R.layout.activity_b_fauna)
                     configurarBotonAgregarFauna()
@@ -139,18 +148,21 @@ class BFauna : AppCompatActivity() {
                 return true
             }
             R.id.menu_eliminar ->{
-                val zooId = gestorDatos.getFaunaBasePorIdZoo(idZooB)[posicionItemSeleccionado].idAnimal
-                val zooide = gestorDatos.getFaunaBasePorIdZoo(idZooB)[posicionItemSeleccionado].idZoo
-                Log.d("idZOOO", "$zooId")
-                val nombre = gestorDatos.getFaunaBasePorIdZoo(idZooB)[posicionItemSeleccionado].nombreNacimiento
-                if (zooId != null) {
-                    gestorDatos.eliminarFaunaBase(zooId)
-                    mostrarSnackbar("Eliminando: $nombre")
-                    Log.d("eliminado", "Eliminando: $zooId")
+                //val zooId = gestorDatos.getFaunaBasePorIdZoo(idZooB)[posicionItemSeleccionado].idAnimal
+
+                val zooAnimal = ECrudGestor.tablaEntrenador!!.getFaunaBasePorIdZoo(idZooB)[posicionItemSeleccionado].idAnimal
+                val id = ECrudGestor.tablaEntrenador!!.getFaunaBasePorIdZoo(idZooB)[posicionItemSeleccionado].idZoo
+                Log.d("idZOOO", "$zooAnimal")
+                //val nombre = gestorDatos.getFaunaBasePorIdZoo(idZooB)[posicionItemSeleccionado].nombreNacimiento
+                if (zooAnimal != null) {
+                    // gestorDatos.eliminarFaunaBase(zooAnimal)
+                    ECrudGestor.tablaEntrenador!!.eliminarFaunaBase(zooAnimal, id)
+                    // mostrarSnackbar("Eliminando: $nombre")
+                    Log.d("eliminado", "Eliminando: $zooAnimal")
                     actualizarLista()
                     //abrirDialogo()
                 } else {
-                    gestorDatos.eliminarFaunaBase(zooId)
+                    //gestorDatos.eliminarFaunaBase(zooId)
                     mostrarSnackbar("No se encontró el elemento para eliminar")
                 }
                 return true
@@ -162,7 +174,8 @@ class BFauna : AppCompatActivity() {
 
 
     private fun actualizarLista(): ListView {
-        val arreglo = gestorDatos.getFaunaBasePorIdZoo(idZooB)
+        // val arreglo = gestorDatos.getFaunaBasePorIdZoo(idZooB)
+        val arreglo = ECrudGestor.tablaEntrenador!!.getFaunaBasePorIdZoo(idZooB)
         val listView = findViewById<ListView>(R.id.lv_fauna)
         val adaptador = ArrayAdapter(
             this,

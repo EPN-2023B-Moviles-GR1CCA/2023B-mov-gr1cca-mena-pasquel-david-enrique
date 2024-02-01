@@ -81,10 +81,19 @@ class SqliteGestorBase(
     }
 
 
-    fun actualizarZooBase(idZoo: Int, nombreZoo: String): Boolean {
+    fun actualizarZooBase(
+        idZoo: Int,
+        nombreComun: String,
+        nombreCientifico: String,
+        diurno: Boolean,
+        paisOriginario: String
+    ): Boolean {
         val conexionEscritura = writableDatabase
         val valoresAActualizar = ContentValues()
-        valoresAActualizar.put("nombreZoo", nombreZoo)
+        valoresAActualizar.put("nombreComun", nombreComun)
+        valoresAActualizar.put("nombreCientifico", nombreCientifico)
+        valoresAActualizar.put("diurno", if (diurno) 1 else 0) // Convierte el booleano a 1 o 0
+        valoresAActualizar.put("paisOriginario", paisOriginario)
 
         val parametrosConsultaActualizar = arrayOf(idZoo.toString())
         val resultadoActualizacion = conexionEscritura.update(
@@ -140,6 +149,20 @@ class SqliteGestorBase(
         return resultadoEliminacion != -1
     }
 
+    fun eliminarZooBase(idZoo: Int): Boolean {
+        val conexionEscritura = writableDatabase
+
+        val parametrosConsultaDelete = arrayOf(idZoo.toString())
+        val resultadoEliminacion = conexionEscritura.delete(
+            "ZOOBASE", // Nombre tabla
+            "idZoo=?", // Consulta Where
+            parametrosConsultaDelete
+        )
+
+        conexionEscritura.close()
+        return resultadoEliminacion != -1
+    }
+
 
 
     fun obtenerUltimoId(): Int? {
@@ -187,7 +210,7 @@ class SqliteGestorBase(
         return ultimoIdFauna
     }
 
-    fun getFaunaBasePorIdZoo(idZoo: Int): FaunaBase {
+    fun getFaunaBasePorIdZoo(idZoo: Int): List<FaunaBase> {
         val baseDatosLectura = readableDatabase
 
         val scriptConsultaLectura = """
@@ -216,35 +239,36 @@ class SqliteGestorBase(
                     faunaEncontrada.peso = peso
                     faunaEncontrada.fechaNacimiento = fechaNacimiento
                 }
+                faunaBases.add(faunaEncontrada)
             } while (resultadoConsultaLectura.moveToNext())
         }
 
         resultadoConsultaLectura.close()
         baseDatosLectura.close()
 
-        return faunaEncontrada
+        return faunaBases.toList()
     }
 
     fun getZooBases(): List<ZooBase> {
         val baseDatosLectura = readableDatabase
 
         val scriptConsultaLectura = """
-            SELECT * FROM ZOOBASE
-        """.trimIndent()
+        SELECT * FROM ZOOBASE
+    """.trimIndent()
+
         val resultadoConsultaLectura = baseDatosLectura.rawQuery(scriptConsultaLectura, null)
 
         val zooBases = mutableListOf<ZooBase>()
 
-        if (resultadoConsultaLectura.moveToFirst()) {
-            do {
-                val idZoo = resultadoConsultaLectura.getInt(0)
-                val nombreComun = resultadoConsultaLectura.getString(1)
-                val nombreCientifico = resultadoConsultaLectura.getString(2)
-                val diurno = resultadoConsultaLectura.getInt(3) == 1
-                val paisOriginario = resultadoConsultaLectura.getString(4)
+        while (resultadoConsultaLectura.moveToNext()) {
+            val idZoo = resultadoConsultaLectura.getInt(0)
+            val nombreComun = resultadoConsultaLectura.getString(1)
+            val nombreCientifico = resultadoConsultaLectura.getString(2)
+            val diurno = resultadoConsultaLectura.getInt(3) == 1
+            val paisOriginario = resultadoConsultaLectura.getString(4)
 
-                zooBases.add(ZooBase(idZoo, nombreComun, nombreCientifico, diurno, paisOriginario))
-            } while (resultadoConsultaLectura.moveToNext())
+            val zooBase = ZooBase(idZoo, nombreComun, nombreCientifico, diurno, paisOriginario)
+            zooBases.add(zooBase)
         }
 
         resultadoConsultaLectura.close()
@@ -252,6 +276,38 @@ class SqliteGestorBase(
 
         return zooBases.toList()
     }
+
+    fun obtenerZooBase(idZoo: Int): ZooBase? {
+        val baseDatosLectura = readableDatabase
+
+        val scriptConsultaLectura = """
+        SELECT * FROM ZOOBASE WHERE idZoo = ?
+    """.trimIndent()
+
+        val parametrosConsultaLectura = arrayOf(idZoo.toString())
+
+        val resultadoConsultaLectura = baseDatosLectura.rawQuery(
+            scriptConsultaLectura,
+            parametrosConsultaLectura
+        )
+
+        var zooBase: ZooBase? = null
+
+        if (resultadoConsultaLectura.moveToFirst()) {
+            val nombreComun = resultadoConsultaLectura.getString(1)
+            val nombreCientifico = resultadoConsultaLectura.getString(2)
+            val diurno = resultadoConsultaLectura.getInt(3) == 1
+            val paisOriginario = resultadoConsultaLectura.getString(4)
+
+            zooBase = ZooBase(idZoo, nombreComun, nombreCientifico, diurno, paisOriginario)
+        }
+
+        resultadoConsultaLectura.close()
+        baseDatosLectura.close()
+
+        return zooBase
+    }
+
 
 
 }

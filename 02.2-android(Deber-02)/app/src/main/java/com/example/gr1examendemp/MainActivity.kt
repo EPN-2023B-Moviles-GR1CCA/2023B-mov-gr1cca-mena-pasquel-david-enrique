@@ -75,12 +75,23 @@ class MainActivity : AppCompatActivity() {
     override fun onContextItemSelected(item: MenuItem): Boolean {
         return when (item.itemId){
             R.id.menu_editar -> {
+
+                /*
                 val zooSeleccionado = gestorDatos.getZooBases()[posicionItemSeleccionado].idZoo
                 val idnew = gestorDatos.getZooBases()[posicionItemSeleccionado].idZoo
                 val nombreComun = gestorDatos.getZooBases()[posicionItemSeleccionado].nombreComun
                 val nombreCientifico = gestorDatos.getZooBases()[posicionItemSeleccionado].nombreCientifico
                 val diurno = gestorDatos.getZooBases()[posicionItemSeleccionado].diurno
                 val pais = gestorDatos.getZooBases()[posicionItemSeleccionado].paisOriginario
+                */
+
+                val Datos = ECrudGestor.tablaEntrenador!!.getZooBases()[posicionItemSeleccionado]
+                val zooSeleccionado = Datos.idZoo
+                val idnew = Datos.idZoo
+                val nombreComun = Datos.nombreComun
+                val nombreCientifico = Datos.nombreCientifico
+                val diurno = Datos.diurno
+                val pais = Datos.paisOriginario
 
 
                 val formularioBase = layoutInflater.inflate(R.layout.formulario_base, null)
@@ -113,9 +124,11 @@ class MainActivity : AppCompatActivity() {
                     Log.d("MainActivity", zooBase.toString())
 
                     // Código para actualizar el elemento en la base de datos
-                    gestorDatos.actualizarZooBase(zooBase)
-
-                    val dat = gestorDatos.getZooBases()
+                    // gestorDatos.actualizarZooBase(zooBase)
+                    if (idnew != null) {
+                        ECrudGestor.tablaEntrenador!!.actualizarZooBase(idnew, nuevoNombreComun, nuevoNombreCientifico, nuevoDiurno, nuevoPaisOriginario)
+                    }
+                    //val dat = gestorDatos.getZooBases()
                     // Cambiar la visibilidad de las vistas para mostrar la interfaz principal
                     setContentView(R.layout.activity_main)
                     configurarBotonAgregarZoo()
@@ -137,11 +150,13 @@ class MainActivity : AppCompatActivity() {
                 //val nombre = gestorDatos.getZooBases()[posicionItemSeleccionado].nombreComun
 
                 val zooId = ECrudGestor.tablaEntrenador!!.getZooBases()[posicionItemSeleccionado].idZoo
-                val nombre = ECrudGestor.tablaEntrenador!!.getZooBases()[posicionItemSeleccionado].nombreComun
+                //val nombre = ECrudGestor.tablaEntrenador!!.getZooBases()[posicionItemSeleccionado].nombreComun
 
                 if (zooId != null) {
-                    gestorDatos.eliminarZooBase(zooId)
-                    mostrarSnackbar("Eliminando: $nombre")
+
+                    ECrudGestor.tablaEntrenador!!.eliminarZooBase(zooId)
+                    //gestorDatos.eliminarZooBase(zooId)
+                    // mostrarSnackbar("Eliminando: $nombre")
                     Log.d("eliminado", "Eliminando: $zooId")
                     actualizarLista()
                     //abrirDialogo()
@@ -151,8 +166,9 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
             R.id.menu_ver -> {
-                val zooId = gestorDatos.getZooBases()[posicionItemSeleccionado].idZoo
+                //val zooId = gestorDatos.getZooBases()[posicionItemSeleccionado].idZoo
 
+                val zooId = ECrudGestor.tablaEntrenador!!.getZooBases()[posicionItemSeleccionado].idZoo
                 // Crear un Intent para abrir la nueva actividad (BFauna)
                 val intent = Intent(this, BFauna::class.java)
 

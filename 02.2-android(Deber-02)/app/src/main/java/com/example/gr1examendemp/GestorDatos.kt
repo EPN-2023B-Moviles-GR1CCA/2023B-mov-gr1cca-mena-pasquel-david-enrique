@@ -105,6 +105,7 @@ class GestorDatos(private val context: Context) {
 
     fun crearZooBase(ZooBase: ZooBase) {
         ZooBases.add(ZooBase)
+
         escribirDatos()
     }
 
