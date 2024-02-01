@@ -133,8 +133,12 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
             R.id.menu_eliminar ->{
-                val zooId = gestorDatos.getZooBases()[posicionItemSeleccionado].idZoo
-                val nombre = gestorDatos.getZooBases()[posicionItemSeleccionado].nombreComun
+                //val zooId = gestorDatos.getZooBases()[posicionItemSeleccionado].idZoo
+                //val nombre = gestorDatos.getZooBases()[posicionItemSeleccionado].nombreComun
+
+                val zooId = ECrudGestor.tablaEntrenador!!.getZooBases()[posicionItemSeleccionado].idZoo
+                val nombre = ECrudGestor.tablaEntrenador!!.getZooBases()[posicionItemSeleccionado].nombreComun
+
                 if (zooId != null) {
                     gestorDatos.eliminarZooBase(zooId)
                     mostrarSnackbar("Eliminando: $nombre")
@@ -165,8 +169,19 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun actualizarLista():ListView {
-        val arreglo = gestorDatos.getZooBases()
+    private fun actualizarLista(): ListView {
+        val tablaEntrenador = ECrudGestor.tablaEntrenador
+        var arreglo = mutableListOf<ZooBase>() // Declara arreglo aquí
+
+        if (tablaEntrenador != null) {
+            arreglo = tablaEntrenador.getZooBases() as MutableList<ZooBase>
+
+        } else {
+            // Manejar el caso cuando tablaEntrenador es null
+            // Puedes imprimir un mensaje de error, mostrar un Toast, etc.
+            Log.e("MainActivity", "tablaEntrenador es null")
+        }
+
         val listView = findViewById<ListView>(R.id.lv_list_view)
         val adaptador = ArrayAdapter(
             this,
@@ -204,10 +219,20 @@ class MainActivity : AppCompatActivity() {
                     // Obtener datos ingresados por el usuario
                     val nombreComun = editTextNombreComun.text.toString()
                     val nombreCientifico = editTextNombreCientifico.text.toString()
-                    val diurno = checkBoxDiurno.isChecked
+                    var diurno = checkBoxDiurno.isChecked
                     val paisOriginario = editTextPaisOriginario.text.toString()
 
-                    val lastId = gestorDatos.obtenerUltimoId()
+                    //   val lastId = gestorDatos.obtenerUltimoId()
+                    val tablaEntrenador = ECrudGestor.tablaEntrenador
+
+                    var lastId = 0
+                    if (tablaEntrenador != null) {
+                        lastId = tablaEntrenador.obtenerUltimoId()!!
+                        // Resto del código...
+                    } else {
+                        // Manejar el caso cuando tablaEntrenador es null
+                        Log.e("MainActivity", "tablaEntrenador es null")
+                    }
                     val nuevoIdZoo = lastId?.plus(1)
 
                     val zooBase = nuevoIdZoo?.let { id ->
@@ -216,10 +241,18 @@ class MainActivity : AppCompatActivity() {
 
                     Log.d("RegBaseZoo", zooBase.toString())
 
-                    // guardar el nuevo elemento
-                    gestorDatos.crearZooBase(zooBase)
+                    val diurnoEnEntero = if (diurno) 1 else 0
 
-                    // Actualizar la lista después de guardar el nuevo registro
+                    // guardar el nuevo elemento
+
+                    if (tablaEntrenador != null) {
+                        val dat = tablaEntrenador.crearZooBase(nombreComun, nombreCientifico, diurnoEnEntero, paisOriginario)
+                    } else {
+                        Log.e("MainActivity", "tablaEntrenador es null")
+                    }
+                    Log.d("Crear", "${ECrudGestor}")
+
+
                     actualizarLista()
                 }
                 .setNegativeButton("Cancelar", null)

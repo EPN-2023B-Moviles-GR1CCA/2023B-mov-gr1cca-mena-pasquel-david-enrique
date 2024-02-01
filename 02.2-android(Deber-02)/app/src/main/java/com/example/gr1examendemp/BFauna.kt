@@ -140,6 +140,7 @@ class BFauna : AppCompatActivity() {
             }
             R.id.menu_eliminar ->{
                 val zooId = gestorDatos.getFaunaBasePorIdZoo(idZooB)[posicionItemSeleccionado].idAnimal
+                val zooide = gestorDatos.getFaunaBasePorIdZoo(idZooB)[posicionItemSeleccionado].idZoo
                 Log.d("idZOOO", "$zooId")
                 val nombre = gestorDatos.getFaunaBasePorIdZoo(idZooB)[posicionItemSeleccionado].nombreNacimiento
                 if (zooId != null) {
@@ -199,7 +200,8 @@ class BFauna : AppCompatActivity() {
                     val nuevoPeso = editTextPeso.text.toString().toDoubleOrNull()
                     val nuevoFechaNacimiento = editTextFechaNacimiento.text.toString()
 
-                    val lastId = gestorDatos.obtenerUltimoIdFaunaPorIdZoo(idZooB)
+                    // val lastId = gestorDatos.obtenerUltimoIdFaunaPorIdZoo(idZooB)
+                    val lastId = ECrudGestor.tablaEntrenador!!.obtenerUltimoIdFaunaPorIdZoo(idZooB)
                     val nuevoIdZoo = lastId?.plus(1)
                     val faunaBase = nuevoIdZoo?.let { id ->
                         nuevoPeso?.let { it1 ->
@@ -211,7 +213,12 @@ class BFauna : AppCompatActivity() {
                     Log.d("RegBaseZoo", faunaBase.toString())
 
                     // guardar el nuevo elemento
-                    gestorDatos.crearFaunaBase(faunaBase)
+                    if (nuevoIdZoo != null) {
+                        if (nuevoPeso != null) {
+                            ECrudGestor.tablaEntrenador!!.crearFauna(idZooB, nuevoNombreNacimiento,nuevoPeso, nuevoFechaNacimiento)
+                        }
+                    }
+                    // gestorDatos.crearFaunaBase(faunaBase)
 
                     // Actualizar la lista después de guardar el nuevo registro
                     actualizarLista()

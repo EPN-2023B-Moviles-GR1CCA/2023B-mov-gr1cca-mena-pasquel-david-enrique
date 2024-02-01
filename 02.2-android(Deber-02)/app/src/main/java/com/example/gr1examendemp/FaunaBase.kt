@@ -1,11 +1,11 @@
 package com.example.gr1examendemp
 
 data class FaunaBase(
-    val idAnimal: Int?,
-    val idZoo: Int,
-    val nombreNacimiento: String,
-    val peso: Double?,
-    val fechaNacimiento: String
+    var idAnimal: Int?,
+    var idZoo: Int,
+    var nombreNacimiento: String,
+    var peso: Double?,
+    var fechaNacimiento: String
 ) {
     override fun toString(): String {
         return """
