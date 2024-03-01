@@ -151,10 +151,7 @@ class GestorDatos(private val context: Context) {
         escribirDatos()
     }
 
-    fun obtenerIdZooPorIdAnimal(idAnimal: Int): Int {
-        val FaunaBase = FaunaBase.find { it.idAnimal == idAnimal }
-        return FaunaBase?.idZoo ?: throw IllegalArgumentException("No se encontró el animal con id: $idAnimal")
-    }
+
 
     fun obtenerUltimoId(): Int? {
         val ultimoIdZoo: Int? = ZooBases.lastOrNull()?.idZoo
@@ -166,11 +163,7 @@ class GestorDatos(private val context: Context) {
         return ultimoIdFauna
     }
 
-    fun obtenerUltimoIdFaunaPorIdZoo(idZoo: Int): Int {
-        val faunaFiltrada = FaunaBase.toList().filter { it.idZoo == idZoo }
-        val ultimoIdFauna: Int? = faunaFiltrada.lastOrNull()?.idAnimal
-        return ultimoIdFauna ?: 0
-    }
+
 
     fun getZooBases(): List<ZooBase> {
         return ZooBases.toList()
@@ -180,8 +173,5 @@ class GestorDatos(private val context: Context) {
         return FaunaBase.toList()
     }
 
-    fun getFaunaBasePorIdZoo(idZoo: Int): List<FaunaBase> {
-        // Filtrar la lista de FaunaBase por el idZoo especificado
-        return FaunaBase.toList().filter { it.idZoo == idZoo }
-    }
+
 }

@@ -6,11 +6,11 @@ import android.os.Parcelable
 import androidx.annotation.RequiresApi
 
 class ZooBase(
-    val idZoo: Int?,
-    val nombreComun: String,
-    val nombreCientifico: String,
-    val diurno: Boolean,
-    val paisOriginario: String
+    val idZoo: Int,
+    val nombreComun: String?,
+    val nombreCientifico: String?,
+    val diurno: Boolean?,
+    val paisOriginario: String?
 ) : Parcelable{
     override fun toString(): String {
         return """
@@ -23,19 +23,23 @@ class ZooBase(
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     constructor(parcel: Parcel) : this(
-        parcel.readValue(Int::class.java.classLoader) as? Int,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readByte() != 0.toByte(),
-        parcel.readString()!!
+        parcel.readInt(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readBoolean(),
+        parcel.readString()
     )
 
+    constructor() : this(0, null, null, null, null)
+
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeValue(idZoo)
         parcel.writeString(nombreComun)
         parcel.writeString(nombreCientifico)
-        parcel.writeByte(if (diurno) 1 else 0)
+        parcel.writeBoolean(diurno!!)
         parcel.writeString(paisOriginario)
     }
 
@@ -44,6 +48,7 @@ class ZooBase(
     }
 
     companion object CREATOR : Parcelable.Creator<ZooBase> {
+        @RequiresApi(Build.VERSION_CODES.Q)
         override fun createFromParcel(parcel: Parcel): ZooBase {
             return ZooBase(parcel)
         }

@@ -26,19 +26,63 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        gestorDatos = GestorDatos(this)
 
         setContentView(R.layout.activity_main)
-        listView = findViewById<ListView>(R.id.lv_list_view)
+
+        BDCompObj.CompZoologico = EFirestoreHelper()
+        InitData.arregloZoologicosFauna
+
+
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.i("ciclo-vida", "onStart")
+
+        val listViewU = findViewById<ListView>(R.id.lv_list_view)
+        val adaptador = ArrayAdapter(
+            this,
+            android.R.layout.simple_list_item_1,
+            BDCompObj.CompZoologico!!.listarZoo()
+        )
+        Log.i("ciclo-vida", "${BDCompObj.CompZoologico!!.listarZoo()}")
+        listViewU.adapter = adaptador
+        adaptador.notifyDataSetChanged()
+
+        this.registerForContextMenu(listViewU)
 
         configurarBotonAgregarZoo()
-        registerForContextMenu(actualizarLista())
 
-        Log.d("fuera","sigue snackbar")
-        // Mostrar Snackbar de éxito
-        val snackbar = Snackbar.make(findViewById(android.R.id.content), "Registro ingresado con éxito", Snackbar.LENGTH_SHORT)
-        snackbar.show()
+    }
 
+    var idSelectItem = 0
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.run {
+            // Guardar las variables
+            // primitivos
+            putInt("idItemSeleccionado",idSelectItem)
+            putParcelableArrayList("arregloZoo",BDCompObj.CompZoologico!!.listarZoo())
+            putParcelableArrayList("arregloPP",InitData.arregloZoologicosFauna)
+
+        }
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        idSelectItem = savedInstanceState.getInt("idItemSeleccionado")
+
+        InitData.arregloZoologicosFauna = savedInstanceState.getParcelableArrayList<ZoologicoFauna>("arregloPP")!!
+        val listViewU = findViewById<ListView>(R.id.lv_list_view)
+        val adaptador = ArrayAdapter(
+            this,
+            android.R.layout.simple_list_item_1,
+            BDCompObj.CompZoologico!!.listarFaunas()
+        )
+        listViewU.adapter = adaptador
+        adaptador.notifyDataSetChanged()
     }
 
 
@@ -59,27 +103,11 @@ class MainActivity : AppCompatActivity() {
         posicionItemSeleccionado = posicion
     }
 
-    fun mostrarSnackbar(texto:String){
-        Snackbar
-            .make(
-                findViewById(R.id.lv_list_view), // view
-                texto, // texto
-                Snackbar.LENGTH_LONG // tiempo
-            )
-            .show()
 
-    }
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
         return when (item.itemId){
             R.id.menu_editar -> {
-                val zooSeleccionado = gestorDatos.getZooBases()[posicionItemSeleccionado].idZoo
-                val idnew = gestorDatos.getZooBases()[posicionItemSeleccionado].idZoo
-                val nombreComun = gestorDatos.getZooBases()[posicionItemSeleccionado].nombreComun
-                val nombreCientifico = gestorDatos.getZooBases()[posicionItemSeleccionado].nombreCientifico
-                val diurno = gestorDatos.getZooBases()[posicionItemSeleccionado].diurno
-                val pais = gestorDatos.getZooBases()[posicionItemSeleccionado].paisOriginario
-
 
                 val formularioBase = layoutInflater.inflate(R.layout.formulario_base, null)
                 setContentView(formularioBase)
@@ -89,13 +117,23 @@ class MainActivity : AppCompatActivity() {
                 val editTextNombreCientifico: EditText = findViewById(R.id.editTextNombreCientifico)
                 val checkBoxDiurno: CheckBox = findViewById(R.id.checkBoxDiurno)
                 val editTextPaisOriginario: EditText = findViewById(R.id.editTextPaisOriginario)
+
+
+
+                BDCompObj.CompZoologico!!.listarZoo().forEachIndexed{ indice: Int, zoo: ZooBase ->
+                    if(indice == posicionItemSeleccionado){
+
+                        // Llenar el formulario con los datos existentes
+                        editTextNombreComun.setText(zoo.nombreComun.toString())
+                        editTextNombreCientifico.setText(zoo.nombreCientifico.toString())
+                        checkBoxDiurno.isChecked = zoo.diurno==true
+                        editTextPaisOriginario.setText(zoo.paisOriginario.toString())
+                    }
+                }
+
+                //boton Guardar
                 val buttonGuardar: Button = findViewById(R.id.buttonGuardar)
 
-                // Llenar el formulario con los datos existentes
-                editTextNombreComun.setText(nombreComun)
-                editTextNombreCientifico.setText(nombreCientifico)
-                checkBoxDiurno.isChecked = diurno
-                editTextPaisOriginario.setText(pais)
 
                 buttonGuardar.setOnClickListener {
                     // Obtener datos ingresados por el usuario
@@ -104,20 +142,13 @@ class MainActivity : AppCompatActivity() {
                     val nuevoDiurno = checkBoxDiurno.isChecked
                     val nuevoPaisOriginario = editTextPaisOriginario.text.toString()
 
-                    val zooBase = idnew?.let { id ->
-                        ZooBase(id, nuevoNombreComun, nuevoNombreCientifico, nuevoDiurno, nuevoPaisOriginario)
-                    } ?: ZooBase(null, nuevoNombreComun, nuevoNombreCientifico, nuevoDiurno, nuevoPaisOriginario)
+                    //actualizar datos
+                    BDCompObj.CompZoologico!!.actualizarZoologico(posicionItemSeleccionado,nuevoNombreComun,nuevoNombreCientifico,nuevoDiurno,nuevoPaisOriginario)
 
-                    Log.d("MainActivity", zooBase.toString())
 
-                    // Código para actualizar el elemento en la base de datos
-                    gestorDatos.actualizarZooBase(zooBase)
-
-                    val dat = gestorDatos.getZooBases()
                     // Cambiar la visibilidad de las vistas para mostrar la interfaz principal
                     setContentView(R.layout.activity_main)
                     configurarBotonAgregarZoo()
-                    registerForContextMenu(actualizarLista())
 
                     // Mostrar Snackbar de éxito
                     val snackbar = Snackbar.make(findViewById(android.R.id.content), "Registro editado con éxito", Snackbar.LENGTH_SHORT)
@@ -131,17 +162,18 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
             R.id.menu_eliminar ->{
-                val zooId = gestorDatos.getZooBases()[posicionItemSeleccionado].idZoo
-                val nombre = gestorDatos.getZooBases()[posicionItemSeleccionado].nombreComun
-                if (zooId != null) {
-                    gestorDatos.eliminarZooBase(zooId)
-                    mostrarSnackbar("Eliminando: $nombre")
-                    Log.d("eliminado", "Eliminando: $zooId")
-                    actualizarLista()
-                    //abrirDialogo()
-                } else {
-                    mostrarSnackbar("No se encontró el elemento para eliminar")
-                }
+
+                BDCompObj.CompZoologico!!.eliminarZoo(posicionItemSeleccionado)
+
+                val listView = findViewById<ListView>(R.id.lv_list_view)
+                val adaptador = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_list_item_1,
+                    BDCompObj.CompZoologico!!.listarZoo()
+                )
+                listView.adapter = adaptador
+                adaptador.notifyDataSetChanged()
+
                 return true
             }
             R.id.menu_ver -> {
@@ -163,22 +195,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun actualizarLista():ListView {
-        val arreglo = gestorDatos.getZooBases()
-        val listView = findViewById<ListView>(R.id.lv_list_view)
-        val adaptador = ArrayAdapter(
-            this,
-            android.R.layout.simple_list_item_1,
-            arreglo
-        )
-
-        listView.adapter = adaptador
-        adaptador.notifyDataSetChanged()
-        return listView
-    }
-
-
-
 
     private fun configurarBotonAgregarZoo() {
         val botonAgregarZoo = findViewById<Button>(R.id.btn_anadir_zoo_list_view)
@@ -186,6 +202,7 @@ class MainActivity : AppCompatActivity() {
         botonAgregarZoo.setOnClickListener {
             // Inflar el nuevo layout (formulario_base.xml)
             val formularioBase = layoutInflater.inflate(R.layout.formulario_base, null)
+            var idLast = 0
 
             // Obtener referencias a las vistas en el nuevo layout
             val editTextNombreComun: EditText = formularioBase.findViewById(R.id.editTextNombreComun)
@@ -199,30 +216,41 @@ class MainActivity : AppCompatActivity() {
             val dialog = AlertDialog.Builder(this)
                 .setView(formularioBase)
                 .setPositiveButton("Guardar") { _, _ ->
+                    // traer info de firebase
+
+                    val lastItemZoo = BDCompObj.CompZoologico!!.listarZoo().lastIndex
+                    BDCompObj.CompZoologico!!.listarZoo().forEachIndexed{indice: Int, zoo: ZooBase ->
+                        if(indice == lastItemZoo){
+                            idLast = zoo.idZoo!!
+                        }
+                    }
+
+                    val newIdLast = idLast.plus(1)
+
                     // Obtener datos ingresados por el usuario
                     val nombreComun = editTextNombreComun.text.toString()
                     val nombreCientifico = editTextNombreCientifico.text.toString()
                     val diurno = checkBoxDiurno.isChecked
                     val paisOriginario = editTextPaisOriginario.text.toString()
 
-                    val lastId = gestorDatos.obtenerUltimoId()
-                    val nuevoIdZoo = lastId?.plus(1)
+                    //val lastId = gestorDatos.obtenerUltimoId()
+                    //val nuevoIdZoo = lastId?.plus(1)
 
-                    val zooBase = nuevoIdZoo?.let { id ->
+                    /*val zooBase = nuevoIdZoo?.let { id ->
                         ZooBase(id, nombreComun, nombreCientifico, diurno, paisOriginario)
-                    } ?: ZooBase(null, nombreComun, nombreCientifico, diurno, paisOriginario)
+                    } ?: ZooBase(null, nombreComun, nombreCientifico, diurno, paisOriginario)*/
 
-                    Log.d("RegBaseZoo", zooBase.toString())
 
-                    // guardar el nuevo elemento
-                    gestorDatos.crearZooBase(zooBase)
+                    BDCompObj.CompZoologico!!.crearZoologico(newIdLast,nombreComun,nombreCientifico,
+                        diurno, paisOriginario)
 
-                    // Actualizar la lista después de guardar el nuevo registro
-                    actualizarLista()
+
                 }
                 .setNegativeButton("Cancelar", null)
                 .create()
             dialog.show()
+
+
         }
     }
 

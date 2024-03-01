@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "963431452849",
-    "project_id": "gr1examendemp",
-    "storage_bucket": "gr1examendemp.appspot.com"
+    "project_number": "73219082638",
+    "project_id": "gr1examen2",
+    "storage_bucket": "gr1examen2.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:963431452849:android:1a9581ecd0d0c1201a5290",
+        "mobilesdk_app_id": "1:73219082638:android:857e18d3119e9be8bb7cdf",
         "android_client_info": {
           "package_name": "com.example.gr1examendemp"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDVHVpsbfdS6cvdRvwPYBh85wRl_MlI69E"
+          "current_key": "AIzaSyCdPTnblCL5iBbSxmNCx9eKZ9P9npvrSbU"
         }
       ],
       "services": {

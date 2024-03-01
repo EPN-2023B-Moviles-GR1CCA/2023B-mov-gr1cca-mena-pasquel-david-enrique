@@ -78,5 +78,6 @@ dependencies {
     implementation("com.firebaseui:firebase-ui-auth:7.2.0")
     // Firestore
     implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-analytics")
 
 }

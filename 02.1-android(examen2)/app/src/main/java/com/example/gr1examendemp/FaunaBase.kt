@@ -1,19 +1,50 @@
 package com.example.gr1examendemp
 
-data class FaunaBase(
+import android.os.Build
+import android.os.Parcel
+import android.os.Parcelable
+import androidx.annotation.RequiresApi
+
+class FaunaBase(
     val idAnimal: Int?,
-    val idZoo: Int,
     val nombreNacimiento: String,
     val peso: Double?,
     val fechaNacimiento: String
-) {
+): Parcelable{
+    constructor(parcel: Parcel) : this(
+        parcel.readValue(Int::class.java.classLoader) as? Int,
+        parcel.readString()!!,
+        parcel.readValue(Double::class.java.classLoader) as? Double,
+        parcel.readString()!!
+    )
+
     override fun toString(): String {
         return """
             |ID Animal: $idAnimal
-            |ID Zoo: $idZoo
             |Nombre de Nacimiento: $nombreNacimiento
             |Peso: $peso
             |Fecha de Nacimiento: $fechaNacimiento
         """.trimMargin()
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeValue(idAnimal)
+        parcel.writeString(nombreNacimiento)
+        parcel.writeValue(peso)
+        parcel.writeString(fechaNacimiento)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<FaunaBase> {
+        override fun createFromParcel(parcel: Parcel): FaunaBase {
+            return FaunaBase(parcel)
+        }
+
+        override fun newArray(size: Int): Array<FaunaBase?> {
+            return arrayOfNulls(size)
+        }
     }
 }
