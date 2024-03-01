@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nombre Común"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/editTextNombreComun"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ingrese el nombre común" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nombre Científico"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/editTextNombreCientifico"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ingrese el nombre científico" />
+
+    <CheckBox
+        android:id="@+id/checkBoxDiurno"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Diurno" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="País Originario"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/editTextPaisOriginario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ingrese el país originario" />
+
+    <Button
+        android:id="@+id/buttonGuardar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Guardar" />
+</LinearLayout>

@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
         val albumRVAdapter = AlbumRVAdapter(albumRVModalArrayList, this)
         albumsRV.adapter = albumRVAdapter
         // en la línea de abajo creando una variable para la URL
-        val url = "https://api.spotify.com/v1/albums?ids=2oZSF17FtHQ9sYBscQXoBe%2C0z7bJ6UpjUw8U4TATtc5Ku%2C36UJ90D0e295TvlU109Xvy%2C3uuu6u13U0KeVQsZ3CZKK4%2C45ZIondgVoMB84MQQaUo9T%2C15CyNDuGY5fsG0Hn9rjnpG%2C1HeX4SmCFW4EPHQDvHgrVS%2C6mCDTT1XGTf48p6FkK9qFL"
+        val url = "https://api.spotify.com/v1/albums?ids=1P4eCx5b11Tfmi4s1GmWmQ%2C2SsEtiB6yJYn8hRRAmtVda%2C7hhxms8KCwlQCWffIJpN9b%2C3umvKIjsD484pa9pCyPK2x%2C3OHC6XD29wXWADtAOP2geV%2C3RZxrS2dDZlbsYtMRM89v8%2C24C47633GRlozws7WBth7t"
         val queue = Volley.newRequestQueue(this@MainActivity)
         // en la línea de abajo haciendo una solicitud de objeto JSON para analizar los datos JSON.
         val albumObjReq = object : JsonObjectRequest(
@@ -136,7 +136,8 @@ class MainActivity : AppCompatActivity() {
                         val albumObj = albumArray.getJSONObject(i)
                         val album_type = albumObj.getString("album_type")
                         val artistName = albumObj.getJSONArray("artists").getJSONObject(0).getString("name")
-                        val external_ids = albumObj.getJSONObject("external_ids").getString("upc")
+                        val externalIdsObject = albumObj.optJSONObject("external_ids")
+                        val external_ids = externalIdsObject?.optString("upc") ?: ""
                         val external_urls = albumObj.getJSONObject("external_urls").getString("spotify")
                         val href = albumObj.getString("href")
                         val id = albumObj.getString("id")
@@ -181,7 +182,7 @@ class MainActivity : AppCompatActivity() {
         val albumRVAdapter = AlbumRVAdapter(albumRVModalArrayList, this)
         albumsRV.adapter = albumRVAdapter
         // en la línea de abajo creando una variable para la URL
-        val url = "https://api.spotify.com/v1/albums?ids=0sjyZypccO1vyihqaAkdt3%2C17vZRWjKOX7TmMktjQL2Qx%2C7lF34sP6HtRAL7VEMvYHff%2C2zXKlf81VmDHIMtQe3oD0r%2C7Gws1vUsWltRs58x8QuYVQ%2C7uftfPn8f7lwtRLUrEVRYM%2C7kSY0fqrPep5vcwOb1juye"
+        val url = "https://api.spotify.com/v1/albums?ids=1P4eCx5b11Tfmi4s1GmWmQ%2C2SsEtiB6yJYn8hRRAmtVda%2C7hhxms8KCwlQCWffIJpN9b%2C3umvKIjsD484pa9pCyPK2x%2C3OHC6XD29wXWADtAOP2geV%2C3RZxrS2dDZlbsYtMRM89v8%2C24C47633GRlozws7WBth7t"
         val queue = Volley.newRequestQueue(this@MainActivity)
         // en la línea de abajo haciendo una solicitud de objeto JSON para analizar los datos JSON.
         val albumObjReq = object : JsonObjectRequest(
