@@ -36,25 +36,23 @@ class EFirestoreHelper {
     }
 
 
-    fun listarZoo(): ArrayList<ZooBase>{
+    fun listarZoo(callback: (ArrayList<ZooBase>) -> Unit) {
         val lista = arrayListOf<ZooBase>()
         base.collection("zoologicos")
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
-
                     val zoo = document.toObject(ZooBase::class.java)
-
                     lista.add(zoo)
                 }
+                // Ordenar la lista por alguna propiedad (por ejemplo, nombreComun)
+                val listaOrdenada = lista.sortedBy { it.idZoo }
+                callback(ArrayList(listaOrdenada))
             }
             .addOnFailureListener { e: Exception ->
                 Log.w(TAG, "Error getting documents", e)
+                callback(arrayListOf())
             }
-        for (lis in lista){
-            Log.d(TAG, "$lis")
-        }
-        return lista
     }
 
 
@@ -113,20 +111,23 @@ class EFirestoreHelper {
         return true
     }
 
-    fun listarFaunas(): ArrayList<FaunaBase>{
-        var lista = arrayListOf<FaunaBase>()
+    fun listarFaunas(callback: (ArrayList<FaunaBase>) -> Unit) {
+        val lista = arrayListOf<FaunaBase>()
         base.collection("faunas")
             .get()
-            .addOnSuccessListener { documents: QuerySnapshot ->
+            .addOnSuccessListener { documents ->
                 for (document in documents) {
-                    val facultad = document.toObject(FaunaBase::class.java)
-                    lista.add(facultad)
+                    val fauna = document.toObject(FaunaBase::class.java)
+                    lista.add(fauna)
                 }
+                // Ordenar la lista por alguna propiedad (por ejemplo, nombre)
+                val listaOrdenada = lista.sortedBy { it.idAnimal }
+                callback(ArrayList(listaOrdenada))
             }
             .addOnFailureListener { e: Exception ->
                 Log.w(TAG, "Error obteniendo documents", e)
+                callback(arrayListOf())
             }
-        return lista
     }
 
 

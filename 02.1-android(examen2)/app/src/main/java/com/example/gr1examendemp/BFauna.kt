@@ -23,7 +23,7 @@ import com.google.android.material.snackbar.Snackbar
 class BFauna : AppCompatActivity() {
 
     private lateinit var gestorDatos: GestorDatos
-    private lateinit var listView: ListView
+    private lateinit var listViewU: ListView
     var idZooB=0
     var datoZoo = 0 // dato que sale del anterior activity
     var idZoologico = 0  // dato que se actualiza el id del firebase
@@ -35,6 +35,11 @@ class BFauna : AppCompatActivity() {
         
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_b_fauna)
+
+        BDCompObj.CompZoologico = EFirestoreHelper()
+
+        listViewU = findViewById(R.id.lv_fauna)
+
     }
 
 
@@ -42,27 +47,19 @@ class BFauna : AppCompatActivity() {
         super.onStart()
         Log.i("ciclo-vida", "onStart")
 
-        datoZoo = intent.getIntExtra("ZOO_ID",1)
-        BDCompObj.CompZoologico!!.listarZoo().forEachIndexed { indice: Int, zoo: ZooBase ->
-            if(indice==datoZoo){
-                val titleZoo = findViewById<TextView>(R.id.buttonToZoo)
-                titleZoo.text = zoo.nombreComun
-                idZoologico = zoo.idZoo!!
+
+        BDCompObj.CompZoologico?.listarZoo { lista ->
+            datoZoo = intent.getIntExtra("ZOO_ID",1)
+            Log.d("datoZOO: ", "${datoZoo}")
+            lista.forEachIndexed { indice: Int, zoo: ZooBase ->
+                if (datoZoo == zoo.idZoo) {
+                    val titleZoo = findViewById<TextView>(R.id.buttonToZoo)
+                    titleZoo.text = zoo.nombreComun
+                }
             }
         }
 
-        val listViewFauna = findViewById<ListView>(R.id.lv_list_view)
-
-        val adaptador = ArrayAdapter(
-            this,
-            android.R.layout.simple_list_item_1,
-            listViewFauna()
-        )
-
-        listViewFauna.adapter = adaptador
-        adaptador.notifyDataSetChanged()
-
-        this.registerForContextMenu(listViewFauna)
+        listViewFauna()
 
         configurarBotonAgregarFauna()
 
@@ -77,85 +74,90 @@ class BFauna : AppCompatActivity() {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
 
-        val facultadListView = findViewById<ListView>(R.id.lv_list_view)
+        listViewFauna()
 
-        val adaptador = ArrayAdapter(
-            this,
-            android.R.layout.simple_list_item_1,
-            listViewFauna()
-        )
-        facultadListView.adapter = adaptador
-        adaptador.notifyDataSetChanged()
     }
 
 
-    private fun actualizarListaFauna() {
-        val listViewFacultad = findViewById<ListView>(R.id.lv_list_view)
-        val adaptador = ArrayAdapter(
-            this,
-            android.R.layout.simple_list_item_1,
-            listViewFauna()
-        )
-        listViewFacultad.adapter = adaptador
-        adaptador.notifyDataSetChanged()
-    }
 
 
-    fun listViewFauna():ArrayList<FaunaBase>{
-        var listaIDFaunas= arrayListOf<Int>()
 
-        InitData.arregloZoologicosFauna.forEachIndexed { indice: Int, pp: ZoologicoFauna ->
-            if(pp.idZoo == idZoologico){
-                listaIDFaunas.add(pp.idFauna)
-            }
-        }
-        var faunaLists = arrayListOf<FaunaBase>()
-        BDCompObj.CompZoologico!!.listarFaunas().forEachIndexed { index : Int, facultad: FaunaBase ->
-            for(i in listaIDFaunas){
-                if(i==facultad.idAnimal){
-                    faunaLists.add(facultad)
+    private fun listViewFauna() {
+        val listaIDFaunas = arrayListOf<Int>()
+        val faunaLists = arrayListOf<FaunaBase>()
+
+
+        BDCompObj.CompZoologico!!.listarZoo { lista ->
+            Log.d("datoZOO2: ", "${datoZoo}")
+            lista.forEachIndexed{ indice: Int, zoo:ZooBase ->
+                if(datoZoo == zoo.idZoo){
+                    idZoologico = zoo.idZoo
+                    Log.d("idZoologico: ", "${idZoologico}")
                 }
             }
+
+            InitData.arregloZoologicosFauna.forEachIndexed{ indice: Int, pp: ZoologicoFauna ->
+                if(pp.idZoo == idZoologico){
+                    listaIDFaunas.add(pp.idFauna)
+                }
+            }
+            Log.d("faunasIdentificadores: ", "${listaIDFaunas}")
+
+            BDCompObj.CompZoologico?.listarFaunas { listaFaunas ->
+                listaFaunas.forEachIndexed { index: Int, fauna: FaunaBase ->
+
+                    for(i in listaIDFaunas){
+                        Log.d("faunasId: ", "${i}")
+                        if(i==fauna.idAnimal){
+                            Log.d("faunas: ", "${fauna}")
+                            faunaLists.add(fauna)
+                        }
+                    }
+
+                }
+
+                val listViewFacultad = findViewById<ListView>(R.id.lv_fauna)
+                val adaptador = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_list_item_1,
+                    faunaLists
+                )
+                listViewFacultad.adapter = adaptador
+                adaptador.notifyDataSetChanged()
+
+                // Registrar el ListView para el menú contextual
+                registerForContextMenu(listViewFacultad)
+            }
+
+
         }
 
-        return faunaLists
+
+
+
+
     }
 
 
     var posicionItemSeleccionado = 0
-    override fun onCreateContextMenu(
-        menu: ContextMenu?,
-        v: View?,
-        menuInfo: ContextMenu.ContextMenuInfo?
-    ) {
+    override fun onCreateContextMenu(menu: ContextMenu?,
+                                     v: View?,
+                                     menuInfo: ContextMenu.ContextMenuInfo?)
+    {
         super.onCreateContextMenu(menu, v, menuInfo)
-        // Llenamos las opciones del menu
         val inflater = menuInflater
         inflater.inflate(R.menu.menu, menu)
-        // Ocultar el elemento "Ver Fauna"
-        val item = menu?.findItem(R.id.menu_ver)
-        item?.isVisible = false
+
         // Obtener el id del ArrayListSeleccionado
         val info = menuInfo as AdapterView.AdapterContextMenuInfo
+        Log.d("IDen", "${info}")
         val posicion = info.position
         posicionItemSeleccionado = posicion
-    }
-
-    fun mostrarSnackbar(texto:String){
-        Snackbar
-            .make(
-                findViewById(R.id.lv_fauna), // view
-                texto, // texto
-                Snackbar.LENGTH_LONG // tiempo
-            )
-            .show()
     }
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
         return when (item.itemId){
             R.id.menu_editar -> {
-
-
                 val formularioFauna = layoutInflater.inflate(R.layout.formulario_fauna, null)
                 setContentView(formularioFauna)
 
@@ -165,13 +167,15 @@ class BFauna : AppCompatActivity() {
                 val editTextFechaNacimiento: EditText = findViewById(R.id.editTextFechaNacimiento)
                 val buttonGuardar: Button = findViewById(R.id.buttonGuardarFauna)
 
-                BDCompObj.CompZoologico!!.listarFaunas().forEachIndexed { index, fauna: FaunaBase ->
-                    if (posicionItemSeleccionado == fauna.idAnimal){
-                        // Llenar el formulario con los datos existentes
-                        editTextNombreNacimiento.setText(fauna.fechaNacimiento)
-                        editTextPeso.setText(fauna.peso.toString())
-                        editTextFechaNacimiento.setText(fauna.fechaNacimiento)
+                BDCompObj.CompZoologico?.listarFaunas { lista ->
+                    lista.forEachIndexed { index: Int, fauna: FaunaBase ->
+                        if (posicionItemSeleccionado == fauna.idAnimal) {
+                            editTextNombreNacimiento.setText(fauna.fechaNacimiento)
+                            editTextPeso.setText(fauna.peso.toString())
+                            editTextFechaNacimiento.setText(fauna.fechaNacimiento)
+                        }
                     }
+
                 }
 
                 buttonGuardar.setOnClickListener {
@@ -188,7 +192,7 @@ class BFauna : AppCompatActivity() {
                     // Cambiar la visibilidad de las vistas para mostrar la interfaz principal
                     setContentView(R.layout.activity_b_fauna)
                     configurarBotonAgregarFauna()
-                    actualizarListaFauna()
+                    listViewFauna()
 
                     // Mostrar Snackbar de éxito
                     val snackbar = Snackbar.make(findViewById(android.R.id.content), "Registro editado con éxito", Snackbar.LENGTH_SHORT)
@@ -200,7 +204,7 @@ class BFauna : AppCompatActivity() {
             }
             R.id.menu_eliminar ->{
                 BDCompObj.CompZoologico!!.eliminarFauna(posicionItemSeleccionado)
-                actualizarListaFauna()
+                listViewFauna()
                 return true
             }
             
@@ -234,44 +238,50 @@ class BFauna : AppCompatActivity() {
                 .setPositiveButton("Guardar") { _, _ ->
 
 
-                    BDCompObj.CompZoologico!!.listarZoo().forEachIndexed { indice: Int, zoo: ZooBase ->
-                        if(indice==datoZoo){
-                            IndexZoo = zoo.idZoo!!
+                    BDCompObj.CompZoologico?.listarZoo { lista ->
+                        lista.forEachIndexed { indice: Int, zoo: ZooBase ->
+                            if (indice == datoZoo) {
+                                IndexZoo = zoo.idZoo!!
+                            }
                         }
                     }
 
-                    val longListFaunas = BDCompObj.CompZoologico!!.listarFaunas().lastIndex
-                    BDCompObj.CompZoologico!!.listarFaunas().forEachIndexed { indice: Int, faunas: FaunaBase ->
-                        Log.i("testExamen","${faunas.idAnimal} -> ${faunas.nombreNacimiento}")
-                        if(indice == longListFaunas){
-                            lastFauna = faunas.idAnimal!!
+                    BDCompObj.CompZoologico?.listarFaunas { lista ->
+                        var idUltimaFauna =0
+                        if (lista.isNotEmpty()) {
+                            val ultimaFauna = lista.last()
+                            idUltimaFauna = ultimaFauna.idAnimal!!
+                        }
+
+                        val plusIDFauna = idUltimaFauna.plus(1)
+
+                        var longPP = InitData.arregloZoologicosFauna.lastIndex
+                        InitData.arregloZoologicosFauna.forEachIndexed { indice: Int, zooFaunas: ZoologicoFauna ->
+                            if(indice==longPP)
+                                lastIdZooFa = zooFaunas.idZooFauna
+                        }
+                        val plusLastIdZooFa = lastIdZooFa.plus(1)
+
+                        // Obtener datos ingresados por el usuario
+                        val nuevoNombreNacimiento = TextNombreNacimiento.text.toString()
+                        val nuevoPeso = TextPeso.text.toString().toDoubleOrNull()
+                        val nuevoFechaNacimiento = TextFechaNacimiento.text.toString()
+
+                        if (nuevoPeso != null) {
+                            BDCompObj.CompZoologico!!.crearFauna(plusIDFauna,nuevoNombreNacimiento,nuevoPeso,nuevoNombreNacimiento)
+                        }
+
+
+                        BDCompObj.CompZoologico?.listarZoo { lista ->
+                            lista.forEachIndexed { indice: Int, zoo: ZooBase ->
+                                if (datoZoo == datoZoo) {
+                                    idZoologico = zoo.idZoo!!
+                                }
+                            }
+                            InitData.arregloZoologicosFauna.add(ZoologicoFauna(plusLastIdZooFa,idZoologico, plusIDFauna))
                         }
                     }
-
-                    val plusIDFauna = lastFauna.plus(1)
-
-                    var longPP = InitData.arregloZoologicosFauna.lastIndex
-                    InitData.arregloZoologicosFauna.forEachIndexed { indice: Int, zooFaunas: ZoologicoFauna ->
-                        if(indice==longPP)
-                            lastIdZooFa = zooFaunas.idZooFauna
-                    }
-
-                    val plusLastIdZooFa = lastIdZooFa.plus(1)
-
-                    // Obtener datos ingresados por el usuario
-                    val nuevoNombreNacimiento = TextNombreNacimiento.text.toString()
-                    val nuevoPeso = TextPeso.text.toString().toDoubleOrNull()
-                    val nuevoFechaNacimiento = TextFechaNacimiento.text.toString()
-
-                    if (nuevoPeso != null) {
-                        BDCompObj.CompZoologico!!.crearFauna(plusIDFauna,nuevoNombreNacimiento,nuevoPeso,nuevoNombreNacimiento)
-                    }
-
-                    InitData.arregloZoologicosFauna.add(ZoologicoFauna(plusLastIdZooFa,idZoologico, plusIDFauna))
-
-
-                    actualizarListaFauna()
-
+                    listViewFauna()
                 }
                 .setNegativeButton("Cancelar", null)
                 .create()

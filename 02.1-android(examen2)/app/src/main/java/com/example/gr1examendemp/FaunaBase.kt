@@ -1,22 +1,21 @@
 package com.example.gr1examendemp
 
-import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.annotation.RequiresApi
 
 class FaunaBase(
-    val idAnimal: Int?,
-    val nombreNacimiento: String,
+    val idAnimal: Int,
+    val nombreNacimiento: String?,
     val peso: Double?,
-    val fechaNacimiento: String
+    val fechaNacimiento: String?
 ): Parcelable{
     constructor(parcel: Parcel) : this(
-        parcel.readValue(Int::class.java.classLoader) as? Int,
-        parcel.readString()!!,
+        parcel.readInt() ,
+        parcel.readString(),
         parcel.readValue(Double::class.java.classLoader) as? Double,
-        parcel.readString()!!
+        parcel.readString()
     )
+    constructor() : this(0, null, null, null)
 
     override fun toString(): String {
         return """
