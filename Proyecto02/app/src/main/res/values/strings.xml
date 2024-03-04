@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">gr1comProyectoFinal</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="Completado">Hello blank fragment</string>
 </resources>

@@ -1,18 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Home">
+    tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/upperContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="HolaMundo"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:orientation="vertical">
+
+        <!-- Barra de búsqueda -->
+        <SearchView
+            style="@style/BotonRedondeado"
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:iconifiedByDefault="false"
+            android:queryHint="Buscar..."/>
+
+        <!-- Pestañas (Botones) -->
+        <LinearLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnTab1"
+                style="@style/BotonRedondeado"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Pendiente"
+                android:drawableLeft="@drawable/pendi"
+                android:layout_marginEnd="4dp"
+                android:textAllCaps="false"
+                android:onClick="onTabButtonClick"/>
+
+            <Button
+                android:id="@+id/btnTab2"
+                style="@style/BotonRedondeado"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Completado"
+                android:drawableLeft="@drawable/compl"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:textAllCaps="false"
+                android:onClick="onTabButtonClick"/>
+
+            <Button
+                android:id="@+id/btnTab3"
+                style="@style/BotonRedondeado"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="No Alertado"
+                android:drawableLeft="@drawable/alert"
+                android:layout_marginStart="4dp"
+                android:textAllCaps="false"
+                android:onClick="onTabButtonClick"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/upperContainer"/>
+
+</RelativeLayout>
