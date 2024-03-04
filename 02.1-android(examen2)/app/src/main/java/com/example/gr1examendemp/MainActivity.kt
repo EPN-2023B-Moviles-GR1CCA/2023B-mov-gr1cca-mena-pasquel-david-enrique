@@ -1,6 +1,5 @@
 package com.example.gr1examendemp
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -20,7 +19,6 @@ import android.app.AlertDialog
 class MainActivity : AppCompatActivity() {
 
     private lateinit var gestorDatos: GestorDatos
-    private lateinit var listView: ListView
 
     private lateinit var listViewU: ListView
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +30,8 @@ class MainActivity : AppCompatActivity() {
         BDCompObj.CompZoologico = EFirestoreHelper()
 
         listViewU = findViewById(R.id.lv_list_view)
+
+        configurarBotonAgregarZoo()
         InitData.arregloZoologicosFauna
 
 
@@ -66,7 +66,6 @@ class MainActivity : AppCompatActivity() {
                 putParcelableArrayList("arregloZoo", lista)
             }
 
-            putParcelableArrayList("arregloPP",InitData.arregloZoologicosFauna)
         }
         super.onSaveInstanceState(outState)
     }
@@ -75,18 +74,16 @@ class MainActivity : AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
         idSelectItem = savedInstanceState.getInt("idItemSeleccionado")
 
-        InitData.arregloZoologicosFauna = savedInstanceState.getParcelableArrayList<ZoologicoFauna>("arregloPP")!!
-        val listView = findViewById<ListView>(R.id.lv_list_view)
         BDCompObj.CompZoologico?.listarZoo { lista ->
             val adaptador = ArrayAdapter(
                 this,
                 android.R.layout.simple_list_item_1,
                 lista.map { it.toString() } // Asegúrate de que toString() sea la representación adecuada de cada elemento en tu lista
             )
-            listView.adapter = adaptador
+            listViewU.adapter = adaptador
             adaptador.notifyDataSetChanged()
         }
-        registerForContextMenu(listView)
+        registerForContextMenu(listViewU)
     }
 
 
@@ -100,7 +97,7 @@ class MainActivity : AppCompatActivity() {
         val info = menuInfo as AdapterView.AdapterContextMenuInfo
         Log.d("IDen", "${info}")
         val posicion = info.position
-        posicionItemSeleccionado = posicion.plus(1)
+        posicionItemSeleccionado = posicion
     }
 
 
@@ -118,11 +115,14 @@ class MainActivity : AppCompatActivity() {
                 val checkBoxDiurno: CheckBox = findViewById(R.id.checkBoxDiurno)
                 val editTextPaisOriginario: EditText = findViewById(R.id.editTextPaisOriginario)
 
+                var idZOO = 0
 
 
                 BDCompObj.CompZoologico?.listarZoo { lista ->
+
+                    idZOO = lista[posicionItemSeleccionado].idZoo
                     lista.forEachIndexed { indice: Int, zoo: ZooBase ->
-                        if (indice == posicionItemSeleccionado) {
+                        if (idZOO == zoo.idZoo) {
                             editTextNombreComun.setText(zoo.nombreComun.toString())
                             editTextNombreCientifico.setText(zoo.nombreCientifico.toString())
                             checkBoxDiurno.isChecked = zoo.diurno == true
@@ -142,40 +142,48 @@ class MainActivity : AppCompatActivity() {
                     val nuevoDiurno = checkBoxDiurno.isChecked
                     val nuevoPaisOriginario = editTextPaisOriginario.text.toString()
 
-                    //actualizar datos
-                    BDCompObj.CompZoologico!!.actualizarZoologico(posicionItemSeleccionado,nuevoNombreComun,nuevoNombreCientifico,nuevoDiurno,nuevoPaisOriginario)
+                    // Actualizar datos
+                    BDCompObj.CompZoologico?.listarZoo { lista ->
+                        val id = lista[posicionItemSeleccionado].idZoo
 
-
-                    // Cambiar la visibilidad de las vistas para mostrar la interfaz principal
-                    setContentView(R.layout.activity_main)
-                    configurarBotonAgregarZoo()
-
-                    // Mostrar Snackbar de éxito
-                    val snackbar = Snackbar.make(findViewById(android.R.id.content), "Registro editado con éxito", Snackbar.LENGTH_SHORT)
-                    snackbar.show()
+                        BDCompObj.CompZoologico!!.actualizarZoologico(id, nuevoNombreComun, nuevoNombreCientifico, nuevoDiurno, nuevoPaisOriginario) { exito ->
+                            if (exito) {
+                                // La actualización fue exitosa, iniciar la actividad principal nuevamente
+                                val intent = Intent(this, MainActivity::class.java)
+                                startActivity(intent)
+                                finish()  // Cerrar la actividad actual
+                            } else {
+                                // La actualización falló, manejar la lógica aquí
+                                Log.d("Actualizacion", "Error al actualizar")
+                            }
+                        }
+                    }
                 }
-
-                // val elementoSeleccionado = gestorDatos.actualizarZooBase(nuevo zooBase)
-                // mostrarSnackbar
 
 
                 return true
             }
             R.id.menu_eliminar ->{
 
-                BDCompObj.CompZoologico!!.eliminarZoo(posicionItemSeleccionado)
-
-                val listView = findViewById<ListView>(R.id.lv_list_view)
                 BDCompObj.CompZoologico?.listarZoo { lista ->
-                    val adaptador = ArrayAdapter(
-                        this,
-                        android.R.layout.simple_list_item_1,
-                        lista.map { it.toString() }
-                    )
-                    listView.adapter = adaptador
-                    adaptador.notifyDataSetChanged()
+                    val idDelete = lista[posicionItemSeleccionado].idZoo
+                    BDCompObj.CompZoologico!!.eliminarZooPorId(idDelete) {
+                        Log.d("Eliminado: ", "${idDelete} Zoo eliminado exitosamente")
+                        BDCompObj.CompZoologico?.listarZoo { lista ->
+                            val adaptador = ArrayAdapter(
+                                this,
+                                android.R.layout.simple_list_item_1,
+                                lista.map { it.toString() }
+                            )
+                            listViewU.adapter = adaptador
+                            adaptador.notifyDataSetChanged()
+                        }
+                        registerForContextMenu(listViewU)
+                    }
                 }
-                registerForContextMenu(listView)
+
+
+
 
                 return true
             }
@@ -183,20 +191,17 @@ class MainActivity : AppCompatActivity() {
 
                 var idZOO = 0
                 BDCompObj.CompZoologico!!.listarZoo { lista->
-                    lista.forEachIndexed { indice: Int, zoo: ZooBase ->
-                        if (posicionItemSeleccionado == zoo.idZoo) {
-                            idZOO = zoo.idZoo!!
-                        }
-                    }
 
-                    if(idZOO == 0){
+                    val idZoo = lista[posicionItemSeleccionado].idZoo
+
+                    if(idZoo == 0){
                         Log.d("Cero", "${0}")
                     }else{
                         // Crear un Intent para abrir la nueva actividad (BFauna)
                         val intent = Intent(this, BFauna::class.java)
 
                         // Adjuntar el dato (zooId) al Intent
-                        intent.putExtra("ZOO_ID", idZOO)
+                        intent.putExtra("ZOO_ID", idZoo)
 
                         // Iniciar la nueva actividad con el Intent
                         startActivity(intent)
@@ -252,11 +257,14 @@ class MainActivity : AppCompatActivity() {
 
                         BDCompObj.CompZoologico!!.crearZoologico(newIdLast,nombreComun,nombreCientifico,
                             diurno, paisOriginario)
+
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()  // Cerrar la actividad actual
+
+
+
                     }
-
-
-
-
                 }
                 .setNegativeButton("Cancelar", null)
                 .create()

@@ -47,6 +47,7 @@ class ZooBase(
         return 0
     }
 
+
     companion object CREATOR : Parcelable.Creator<ZooBase> {
         @RequiresApi(Build.VERSION_CODES.Q)
         override fun createFromParcel(parcel: Parcel): ZooBase {
