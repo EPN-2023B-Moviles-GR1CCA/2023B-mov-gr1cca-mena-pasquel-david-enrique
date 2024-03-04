@@ -2,4 +2,18 @@
 <resources>
 
     <style name="Theme.Gr1comProyectoFinal" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.APISplashTheme" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_screen</item>
+        <item name="windowSplashScreenAnimationDuration">300</item>
+        <item name="postSplashScreenTheme">@style/Theme.Gr1comProyectoFinal</item>
+    </style>
+
+    <style name="AppTheme" parent="Theme.AppCompat">
+        <item name="android:windowBackground">@color/white</item>
+        <!-- Otros atributos de estilo van aquí -->
+    </style>
+
+
 </resources>
